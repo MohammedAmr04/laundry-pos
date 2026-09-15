@@ -30,6 +30,12 @@ namespace PosCs.Infrastructure.Printing
         public int InvoiceNumber { get; set; }
         public double Discount { get; set; }
         public double TotalAmount { get; set; }
+        public string Title { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerPhone { get; set; }
+        public string DeliveryAddress { get; set; }
+        public double PaidAmount { get; set; }
+        public double RemainingAmount { get; set; }
     }
 
     public class ReceiptBuilder : IDisposable
@@ -123,13 +129,16 @@ namespace PosCs.Infrastructure.Printing
 
         public void AddHeader(ReceiptInvoiceModel invoice)
         {
-          
+            if (!string.IsNullOrWhiteSpace(invoice.Title)) DrawStringCenter(invoice.Title, _headerFont);
             DrawLine();
             
             DrawStringCenter($"رقم الفاتورة: #{invoice.InvoiceNumber}", _headerFont);
             
             DateTime printDate = invoice.CreatedAt.HasValue ? invoice.CreatedAt.Value : DateTime.Now;
             DrawStringCenter($"التاريخ: {printDate:yyyy-MM-dd HH:mm}", _regularFont);
+            if (!string.IsNullOrWhiteSpace(invoice.CustomerName)) DrawStringCenter($"العميل: {invoice.CustomerName}", _regularFont);
+            if (!string.IsNullOrWhiteSpace(invoice.CustomerPhone)) DrawStringCenter($"الهاتف: {invoice.CustomerPhone}", _regularFont);
+            if (!string.IsNullOrWhiteSpace(invoice.DeliveryAddress)) DrawStringCenter($"العنوان: {invoice.DeliveryAddress}", _smallFont);
             
             DrawLine();
         }
@@ -169,6 +178,8 @@ namespace PosCs.Infrastructure.Printing
 
     // الإجمالي النهائي (بخط عريض/كبير)
     DrawItemLine("الإجمالي النهائي:", TextFormatter.FormatCurrency(invoice.TotalAmount), _totalFont);
+    DrawItemLine("المدفوع:", TextFormatter.FormatCurrency(invoice.PaidAmount), _regularFont);
+    DrawItemLine("المتبقي:", TextFormatter.FormatCurrency(invoice.RemainingAmount), _regularFont);
     DrawLine();
 }
 

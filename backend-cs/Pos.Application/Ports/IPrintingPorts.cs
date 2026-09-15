@@ -20,6 +20,12 @@ namespace PosCs.Application.Ports
         public System.DateTime? CreatedAt { get; set; }
         public double Discount { get; set; }
         public double TotalAmount { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerPhone { get; set; }
+        public string DeliveryAddress { get; set; }
+        public string DocumentTitle { get; set; }
+        public double PaidAmount { get; set; }
+        public double RemainingAmount { get; set; }
         public List<ReceiptLineItem> Items { get; set; } = new List<ReceiptLineItem>();
     }
 

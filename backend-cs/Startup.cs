@@ -43,7 +43,7 @@ namespace PosCs
 
             config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings
             {
-                ContractResolver = new LegacyJsonContractResolver(),
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 NullValueHandling = NullValueHandling.Include,
                 Formatting = Formatting.None
             };

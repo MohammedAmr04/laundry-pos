@@ -40,7 +40,11 @@ namespace PosCs.Infrastructure.Printing
                     {
                         Id = receipt.Id,
                         CreatedAt = receipt.CreatedAt,
-                        InvoiceNumber = receipt.InvoiceNumber
+                        InvoiceNumber = receipt.InvoiceNumber,
+                        Title = receipt.DocumentTitle,
+                        CustomerName = receipt.CustomerName,
+                        CustomerPhone = receipt.CustomerPhone,
+                        DeliveryAddress = receipt.DeliveryAddress
                     });
                     builder.AddItems(receipt.Items.Select(i => new ReceiptItemModel
                     {
@@ -54,7 +58,9 @@ namespace PosCs.Infrastructure.Printing
                     builder.AddTotals(new ReceiptInvoiceModel
                     {
                         Discount = receipt.Discount,
-                        TotalAmount = receipt.TotalAmount
+                        TotalAmount = receipt.TotalAmount,
+                        PaidAmount = receipt.PaidAmount,
+                        RemainingAmount = receipt.RemainingAmount
                     });
                     builder.AddFooter(config.ReceiptFooter);
 

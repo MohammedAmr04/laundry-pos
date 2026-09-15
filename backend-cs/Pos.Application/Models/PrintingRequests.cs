@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PosCs.Domain.Entities;
 
 namespace PosCs.Application.Models
 {
@@ -7,6 +8,11 @@ namespace PosCs.Application.Models
     public sealed class PrintReceiptRequest
     {
         public PrintInvoicePayload Invoice { get; set; }
+    }
+
+    public sealed class DryCleanPrintRequest
+    {
+        public bool ReadyCopy { get; set; }
     }
 
     public sealed class PrintInvoicePayload

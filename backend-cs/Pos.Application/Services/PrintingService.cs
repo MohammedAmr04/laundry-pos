@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PosCs.Application.Models;
 using PosCs.Application.Ports;
+using PosCs.Domain.Entities;
 
 namespace PosCs.Application.Services
 {
@@ -10,11 +11,34 @@ namespace PosCs.Application.Services
     {
         private readonly IReceiptPrinter _receiptPrinter;
         private readonly IBarcodeLabelPrinter _labelPrinter;
+        private readonly IDryCleanOrderRepository _orders;
 
-        public PrintingService(IReceiptPrinter receiptPrinter, IBarcodeLabelPrinter labelPrinter)
+        public PrintingService(IReceiptPrinter receiptPrinter, IBarcodeLabelPrinter labelPrinter, IDryCleanOrderRepository orders)
         {
             _receiptPrinter = receiptPrinter;
             _labelPrinter = labelPrinter;
+            _orders = orders;
+        }
+
+        public PrintOutcome PrintDryClean(string id, bool readyCopy)
+        {
+            var order = _orders.GetById(id);
+            if (order == null) return new PrintOutcome { Success = false, Status = 404, Message = "Order not found" };
+            return _receiptPrinter.PrintReceipt(new ReceiptContent
+            {
+                Id = order.Id,
+                InvoiceNumber = order.OrderNumber,
+                CreatedAt = order.ReceivedAt,
+                Discount = order.DiscountAmount,
+                TotalAmount = order.TotalAmount,
+                CustomerName = order.Client == null ? null : order.Client.Name,
+                CustomerPhone = order.Client == null ? null : order.Client.Phone,
+                DeliveryAddress = order.DeliveryAddress,
+                DocumentTitle = readyCopy ? "طلب جاهز للتسليم" : "إيصال استلام طلب",
+                PaidAmount = order.PaidAmount,
+                RemainingAmount = order.RemainingAmount,
+                Items = order.Lines.Select(i => new ReceiptLineItem { Name = i.GarmentType + " - " + i.ServiceDescription, Quantity = i.Quantity, SalePrice = i.UnitPrice, FinalTotal = i.LineTotal }).ToList()
+            });
         }
 
         public PrintOutcome PrintReceipt(PrintReceiptRequest request)

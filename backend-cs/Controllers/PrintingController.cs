@@ -36,6 +36,19 @@ namespace PosCs.Controllers
             }
         }
 
+        [Route("dry-clean/{id}")]
+        [HttpPost]
+        [RequirePermission("dry_clean.print.receipt", "dry_clean")]
+        public HttpResponseMessage PrintDryClean(string id, [FromBody] DryCleanPrintRequest dto)
+        {
+            try
+            {
+                var outcome = _service.PrintDryClean(id, dto != null && dto.ReadyCopy);
+                return Request.CreateResponse((HttpStatusCode)outcome.Status, ToBody(outcome));
+            }
+            catch (Exception ex) { return Request.CreateResponse(HttpStatusCode.InternalServerError, new { success = false, message = "Print failed", detail = ex.Message }); }
+        }
+
         [Route("print-barcode")]
         [HttpPost]
         [RequirePermission("printing.barcode", "barcode_printing")]
