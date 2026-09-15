@@ -1,6 +1,9 @@
-- [x] Add license fields and migration to Settings.
-- [x] Add backend license rules, repository methods, status response, and management endpoint.
-- [x] Add backend tests for trial and expiry behavior.
-- [x] Add typed frontend API and License Management page.
-- [x] Connect page to settings navigation and existing LicenseGate.
-- [x] Run backend tests/build and frontend static build.
+- [x] Confirm `docs/DRY-CLEAN-SPEC.md` assumptions.
+- [x] Add Dry Clean schema baseline.
+- [x] Remove legacy POS backend modules and frontend routes.
+- [x] Add Dry Clean domain/application/API contracts.
+- [x] Implement order intake and receipt printing.
+- [x] Implement processing, ironer completion, and productivity.
+- [x] Implement ready, delivery, and payment flow.
+- [x] Implement productivity report; translations remain a follow-up cleanup.
+- [x] Run typecheck, lint, Next static build, and backend build.
