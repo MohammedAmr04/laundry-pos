@@ -1,10 +1,10 @@
 # Dry Clean Operations
 
-نظام تشغيل وإدارة مغسلة جاف وتنظيف وكي. النظام يسجل طلب العميل، تفاصيل كل قطعة، الموظف المستلم، المكوجي، حالة الطلب، المدفوعات، التسليم، وإنتاجية المكوجي. الواجهة عربية وRTL، والـ backend يخدم الـ API والواجهة المبنية من نفس البرنامج.
+A focused operations system for dry cleaning, garment cleaning, and ironing. It records customer orders, garment lines, receiving staff, ironers, delivery staff, order status, payments, delivery, and ironer productivity. The UI is Arabic-first and RTL; this documentation is maintained in English.
 
-## التشغيل السريع
+## Quick Start
 
-المتطلبات: Windows، .NET Framework 4.8 Developer Pack، وNode.js.
+Requirements: Windows, .NET Framework 4.8 Developer Pack, and Node.js.
 
 ```powershell
 npm install
@@ -15,36 +15,37 @@ npm run build
 dotnet build backend-cs/pos-cs.csproj --configuration Release
 ```
 
-للتشغيل المحلي:
+For local development:
 
 ```powershell
 npm run dev
 dotnet run --project backend-cs/pos-cs.csproj
 ```
 
-في نسخة التشغيل، شغّل `start.bat`. الـ backend يعمل على `http://localhost:3001` ويطبق migration `backend-cs/Database/Migrations/001_dry_clean_baseline.sql` تلقائيًا. قاعدة البيانات تُحفظ في مجلد `data/` بجانب البرنامج.
+For the packaged application, run `start.bat`. The backend listens on `http://localhost:3001`, serves the API and static frontend, and applies `backend-cs/Database/Migrations/001_dry_clean_baseline.sql` on startup. The SQLite database is stored in the `data/` directory beside the executable.
 
-بيانات الدخول الافتراضية: `admin` / `1234`. يجب تغييرها بعد أول دخول.
+Default credentials are `admin` / `1234`. Change them after the first login.
 
-## البنية
+## Project Structure
 
-- `backend-cs/`: C# .NET Framework 4.8، OWIN Web API، Dapper وSQLite.
-- `src/`: Next.js static export، React، TypeScript وTanStack Query.
-- `backend-cs/Database/Migrations/`: schema واحدة جديدة للنظام.
-- `messages/ar.json`: الترجمة العربية.
-- `docs/DRY-CLEAN-PLAN.md`: الخطة.
-- `docs/DRY-CLEAN-SPEC.md`: المواصفات التفصيلية.
-- [`BUSINESS-LOGIC.md`](BUSINESS-LOGIC.md): الـ workflow والـ constraints.
+- `backend-cs/`: C# .NET Framework 4.8, OWIN Web API, Dapper, and SQLite.
+- `src/`: Next.js static export, React, TypeScript, and TanStack Query.
+- `backend-cs/Database/Migrations/`: The current database baseline.
+- `messages/ar.json`: Arabic UI translations.
+- `docs/DRY-CLEAN-PLAN.md`: Delivery plan.
+- `docs/DRY-CLEAN-SPEC.md`: Detailed functional specification.
+- [`BUSINESS-LOGIC.md`](BUSINESS-LOGIC.md): Workflow and business constraints.
+- `docs/PERMISSIONS.md`: Roles and permission keys.
 
-## أوامر مفيدة
+## Commands
 
-| الأمر | الاستخدام |
+| Command | Purpose |
 |---|---|
-| `npm run dev` | تشغيل واجهة التطوير |
-| `npm run build` | بناء الواجهة كـ static export |
-| `npm run lint` | فحص ESLint |
-| `npm test` | تشغيل Vitest |
-| `dotnet build backend-cs/pos-cs.csproj --configuration Release` | بناء السيرفر |
+| `npm run dev` | Start the frontend development server |
+| `npm run build` | Build the frontend as a static export |
+| `npm run lint` | Run ESLint |
+| `npm test` | Run Vitest |
+| `dotnet build backend-cs/pos-cs.csproj --configuration Release` | Build the backend |
 
 ## Database ERD
 
@@ -77,10 +78,10 @@ erDiagram
     CASH_DRAWER_MOVEMENT { string id PK string shiftId FK string type decimal amount }
 ```
 
-## النسخ الاحتياطي
+## Backup
 
-النسخ المحلية والرفع الاختياري إلى Cloudinary متاحان من `/api/backups`. إعدادات Cloudinary تُقرأ من متغيرات البيئة `POS_CLOUDINARY_CLOUD_NAME` و`POS_CLOUDINARY_API_KEY` و`POS_CLOUDINARY_API_SECRET`. عدم ضبطها لا يمنع تشغيل النظام المحلي.
+Local backups and optional Cloudinary upload are available through `/api/backups`. Configure Cloudinary with `POS_CLOUDINARY_CLOUD_NAME`, `POS_CLOUDINARY_API_KEY`, and `POS_CLOUDINARY_API_SECRET`. The application remains usable locally when these variables are not configured.
 
-## الترخيص والصلاحيات
+## Authentication and Permissions
 
-كل endpoint — باستثناء تسجيل الدخول وفحص الترخيص — يحتاج Bearer token وصلاحية مناسبة. تفاصيل الصلاحيات في `docs/PERMISSIONS.md`.
+All endpoints except login and license checks require a Bearer token and the relevant permission. See `docs/PERMISSIONS.md` and `BUSINESS-LOGIC.md` for the access rules.

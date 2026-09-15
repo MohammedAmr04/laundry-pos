@@ -1,17 +1,17 @@
 # Dry Clean Business Logic
 
-هذا الملف هو المرجع التشغيلي المختصر للنظام. أي تغيير في الـ workflow أو قواعد الحساب يجب أن يحدث هنا أولًا ثم ينعكس على الـ API والواجهة والـ schema.
+This document is the operational reference for the system. Any workflow or calculation change should be reflected here before it is implemented in the API, frontend, or database schema.
 
-## الطلب
+## Order Intake
 
-1. يتم اختيار عميل نشط وموظف الاستلام.
-2. عنوان العميل يُقرأ من `Client.address` ويُحفظ snapshot داخل `DryCleanOrder.deliveryAddress` وقت إنشاء الطلب.
-3. الطلب يحتوي على سطر أو أكثر. كل سطر يسجل نوع القطعة، الخدمة، الكمية، السعر، اللون/الوصف، وحالة القطعة قبل التشغيل عند الحاجة.
-4. الخدمة والسعر يدخلهما المستخدم يدويًا. السجاد والتنظيف الخاص لا يحتاجان catalog منفصلًا.
-5. يمكن تحديد موعد تسليم متوقع وملاحظات الطلب.
-6. يطبع النظام إيصال الاستلام بعد إنشاء الطلب.
+1. Select an active client and the receiving employee.
+2. Read the client's address from `Client.address` and store it as a snapshot in `DryCleanOrder.deliveryAddress` when the order is created.
+3. An order contains one or more lines. Each line records garment type, service, quantity, price, color/description, and condition details when needed.
+4. Services and prices are entered manually. Carpets and special cleaning do not require a separate catalog.
+5. An expected delivery date and order notes are optional.
+6. Print the intake receipt after the order is created.
 
-## حالات الطلب
+## Order Statuses
 
 ```text
 received -> processing -> ready -> delivered
@@ -19,66 +19,66 @@ received -> cancelled
 processing -> needs_review -> ready
 ```
 
-- `received`: تم استلام الطلب ولم يبدأ التجهيز.
-- `processing`: الطلب لدى التشغيل.
-- `needs_review`: يحتاج مراجعة قبل اعتماده كجاهز.
-- `ready`: المكوجي أنهى الطلب والقطع جاهزة للتسليم.
-- `delivered`: تم التسليم.
-- `cancelled`: أُلغي الطلب ولا يدخل في الحسابات التشغيلية.
+- `received`: The garments have been received and processing has not started.
+- `processing`: The order is being handled by the production team.
+- `needs_review`: The order requires review before it can be marked ready.
+- `ready`: The ironer completed the order and it is ready for delivery.
+- `delivered`: The order was handed to the customer or delivery recipient.
+- `cancelled`: The order was cancelled and is excluded from operational calculations.
 
-لا يمكن التسليم قبل `ready`. لا يمكن بدء التجهيز إلا من `received`. لا يمكن تعديل أو إضافة دفع يتجاوز إجمالي الطلب.
+Delivery is not allowed before `ready`. Processing can start only from `received`. Payments cannot exceed the order total.
 
-## الإنتاجية
+## Productivity
 
-- المكوجي واحد فقط لكل طلب عند الإنهاء.
-- يمكن اختيار المكوجي عند إنشاء الطلب أو عند الإنهاء.
-- الإنتاجية لا تُحسب لحظة تسجيل كل قطعة؛ تُحسب مرة واحدة عند إنهاء الطلب.
-- `countedQuantity` يساوي مجموع `quantity` للسطور التي فيها `countsForProductivity = true`.
-- السجاد أو أي خدمة لا تدخل في الإنتاجية يتم تسجيلها بـ `countsForProductivity = false`.
-- `isManualEntry` يوضح أن السطر أُدخل يدويًا، ولا يغير وحده قرار دخوله في الإنتاجية.
-- يتم إنشاء سجل واحد في `DryCleanProductivity` لكل طلب مكتمل.
+- Exactly one ironer is recorded when an order is completed.
+- The ironer may be selected at intake or at completion.
+- Productivity is calculated once when the order is completed, not piece by piece.
+- `countedQuantity` is the sum of `quantity` for lines where `countsForProductivity = true`.
+- Carpets and services excluded from productivity use `countsForProductivity = false`.
+- `isManualEntry` indicates that a line was entered manually; it does not determine productivity eligibility by itself.
+- One `DryCleanProductivity` record is created for each completed order.
 
-## الدفع والمديونية
+## Payments and Credit
 
-- الدفع الكامل والجزئي والآجل مسموحون.
-- الدفع الآجل لا يمنع التسليم.
-- طرق الدفع المقبولة فقط: `cash`, `wallet`, `instapay`.
-- `paidAmount` مجموع مدفوعات الطلب.
+- Full, partial, and deferred payment are allowed.
+- Deferred payment does not prevent delivery.
+- Accepted methods are only `cash`, `wallet`, and `instapay`.
+- `paidAmount` is the sum of all payments for the order.
 - `remainingAmount = max(totalAmount - paidAmount, 0)`.
-- لا يسمح النظام بدفعة أكبر من المتبقي.
-- يمكن تسجيل الدفع عند الاستلام أو أثناء التجهيز أو عند التسليم أو بعده.
+- A payment greater than the remaining balance is rejected.
+- Payments can be recorded at intake, during processing, at delivery, or later.
 
-## التسليم
+## Delivery
 
-- يتم اختيار مندوب التسليم من `Employee`.
-- عند نجاح التسليم يسجل النظام الموظف ووقت التسليم وينقل الحالة إلى `delivered`.
-- عنوان التسليم المطبوع هو العنوان snapshot الموجود في الطلب، وليس العنوان الحالي للعميل.
+- Select the delivery employee from `Employee`.
+- A successful delivery records the employee and delivery time, then changes the order to `delivered`.
+- The printed delivery address is the snapshot stored on the order, not the client's current address.
 
-## الحسابات
+## Calculations
 
 - `lineTotal = quantity * unitPrice`.
-- `subtotal` مجموع `lineTotal` لكل السطور.
-- `totalAmount = subtotal - discountAmount`، والخصم حاليًا صفر افتراضيًا ما لم يُفعّل في قواعد جديدة.
-- كل القيم المالية لا تقبل قيمًا سالبة.
-- الطلب الملغي لا يدخل في أرصدة العملاء أو التقارير التشغيلية.
+- `subtotal` is the sum of all line totals.
+- `totalAmount = subtotal - discountAmount`; discount is currently zero by default unless a new business rule enables it.
+- Financial values cannot be negative.
+- Cancelled orders are excluded from client balances and operational reports.
 
-## الصلاحيات
+## Permissions and Audit
 
-- قراءة وإنشاء وتعديل الطلبات صلاحيات منفصلة.
-- بدء التجهيز وإنهاء الطلب والتسليم صلاحيات منفصلة.
-- تسجيل المدفوعات، طباعة الإيصالات، وقراءة تقرير الإنتاجية صلاحيات منفصلة.
-- الصلاحية لا تكفي وحدها؛ يجب أن تكون capability الـ `dry_clean` مفعلة للـ tenant.
-- كل تغيير حالة ودفع يجب أن يكون قابلًا للتتبع في الـ audit log.
+- Viewing, creating, and updating orders are separate permissions.
+- Starting processing, completing an order, and delivering an order are separate permissions.
+- Recording payments, printing receipts, and viewing productivity are separate permissions.
+- The user's permission is not sufficient by itself; the tenant's `dry_clean` capability must also be enabled.
+- Status changes and payments must be traceable through the audit log.
 
-## قواعد البيانات
+## Database Rules
 
-- لا توجد جداول catalog أو مشتريات أو مخزون أو فواتير بيع بالتجزئة في schema الجديدة.
-- بيانات العميل الأساسية في `Client`، بينما عنوان الطلب التاريخي في `DryCleanOrder`.
-- كل طلب مكتمل ينتج سجل إنتاجية واحدًا، ولا يُكرر لنفس الطلب.
-- كل العلاقات الحرجة تستخدم foreign keys، وحذف الطلب لا يحذف سجل الإنتاجية أو المدفوعات تلقائيًا.
+- The new schema has no catalog, purchasing, inventory, or retail-sales invoice tables.
+- Client master data is stored in `Client`; the historical delivery address is stored in `DryCleanOrder`.
+- Every completed order creates one productivity record and cannot create a duplicate record for the same order.
+- Critical relationships use foreign keys. Deleting an order must not cascade-delete its productivity or payment history.
 
-## الطباعة والنسخ الاحتياطي
+## Printing and Backups
 
-- إيصال الاستلام يطبع عند إنشاء الطلب.
-- ورقة الجاهز تطبع عند الإنهاء، ويمكن إعادة طباعتها.
-- Cloudinary اختياري للنسخ الاحتياطي فقط، وليس جزءًا من تشغيل الطلب أو حساب الإنتاجية.
+- Print the intake receipt when an order is created.
+- Print the ready-for-delivery sheet when processing is completed; it can be reprinted.
+- Cloudinary is optional and used only for database backups, not order processing or productivity calculations.

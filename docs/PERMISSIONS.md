@@ -1,56 +1,56 @@
 # Dry Clean Permissions
 
-الصلاحيات تُفحص في الـ backend بواسطة `RequirePermission`، وتستخدمها الواجهة لإظهار القوائم والأزرار. يجب أن تكون صلاحية المستخدم موجودة وأن تكون capability `dry_clean` مفعلة للـ tenant.
+Permissions are enforced in the backend with `RequirePermission` and are also used by the frontend to control menus and actions. A user must have the permission and the tenant must have the `dry_clean` capability enabled.
 
-## الطلبات
+## Order Permissions
 
-| Key | الاستخدام |
+| Key | Purpose |
 |---|---|
-| `dry_clean.orders.view` | عرض الطلبات والتفاصيل |
-| `dry_clean.orders.create` | إنشاء طلب واستلام القطع |
-| `dry_clean.orders.update` | تعديل بيانات الطلب قبل الإنهاء |
-| `dry_clean.orders.process` | بدء التجهيز |
-| `dry_clean.orders.complete` | إنهاء المكوجي وتسجيل الإنتاجية |
-| `dry_clean.orders.deliver` | تسجيل التسليم |
-| `dry_clean.orders.cancel` | إلغاء الطلب |
+| `dry_clean.orders.view` | View orders and details |
+| `dry_clean.orders.create` | Create and receive orders |
+| `dry_clean.orders.update` | Update an order before completion |
+| `dry_clean.orders.process` | Start processing |
+| `dry_clean.orders.complete` | Complete ironing and record productivity |
+| `dry_clean.orders.deliver` | Record delivery |
+| `dry_clean.orders.cancel` | Cancel an order |
 
-## الدفع والتقارير والطباعة
+## Payments, Reports, and Printing
 
-| Key | الاستخدام |
+| Key | Purpose |
 |---|---|
-| `dry_clean.payments.create` | تسجيل دفعة كاملة أو جزئية |
-| `dry_clean.reports.view` | قراءة التقارير التشغيلية |
-| `dry_clean.productivity.view` | قراءة إنتاجية المكوجي |
-| `dry_clean.print.receipt` | طباعة إيصال الاستلام وورقة الجاهز |
+| `dry_clean.payments.create` | Record full or partial payments |
+| `dry_clean.reports.view` | View operational reports |
+| `dry_clean.productivity.view` | View ironer productivity |
+| `dry_clean.print.receipt` | Print intake and ready-for-delivery receipts |
 
-## التشغيل المشترك
+## Shared Operations
 
-| Key | الاستخدام |
+| Key | Purpose |
 |---|---|
-| `clients.view` | اختيار وعرض العملاء |
-| `clients.create` | إنشاء عميل |
-| `clients.update` | تعديل بيانات العميل وعنوانه |
-| `employees.view` | اختيار موظف الاستلام والمكوجي والمندوب |
-| `employees.manage` | إدارة الموظفين |
-| `shifts.view` | عرض الشيفتات |
-| `shifts.open` | فتح شيفت |
-| `shifts.close` | إغلاق شيفت |
-| `expenses.view` | عرض المصروفات |
-| `expenses.create` | تسجيل مصروف |
-| `audit.view` | قراءة سجل التغييرات |
-| `settings.view` | عرض الإعدادات |
-| `settings.update` | تعديل الإعدادات |
-| `users.manage` | إدارة المستخدمين |
-| `roles.manage` | إدارة الأدوار والصلاحيات |
+| `clients.view` | Select and view clients |
+| `clients.create` | Create clients |
+| `clients.update` | Update client data and address |
+| `employees.view` | Select receiving staff, ironers, and delivery staff |
+| `employees.manage` | Manage employees |
+| `shifts.view` | View shifts |
+| `shifts.open` | Open a shift |
+| `shifts.close` | Close a shift |
+| `expenses.view` | View expenses |
+| `expenses.create` | Record expenses |
+| `audit.view` | View the audit log |
+| `settings.view` | View settings |
+| `settings.update` | Update settings |
+| `users.manage` | Manage users |
+| `roles.manage` | Manage roles and permissions |
 
-## الأدوار الافتراضية
+## Default Roles
 
-- `Admin`: كل الصلاحيات.
-- `Manager`: كل صلاحيات التشغيل والإدارة ما عدا إدارة المستخدمين والأدوار.
-- `Cashier`: العملاء، الموظفون للعرض، إنشاء وتشغيل وتسليم الطلبات، الدفع، الطباعة، الشيفت والمصروفات.
+- `Admin`: all permissions.
+- `Manager`: all operational and administration permissions except user and role management.
+- `Cashier`: clients, employee selection, order intake and processing, delivery, payments, printing, shifts, and expenses.
 
-## قواعد الحماية
+## Security Rules
 
-- لا تعتمد الواجهة وحدها على إخفاء الزر؛ الـ API يعيد `403` عند غياب الصلاحية.
-- لا يتم إضافة صلاحيات خاصة بالبيع بالتجزئة إلى أي role جديد.
-- كل انتقال حالة ودفع يجب أن يسجل actor في الـ audit log.
+- The frontend must not be the only access control; the API returns `403` when permission is missing.
+- Do not add retail-sales permissions to new roles.
+- Every status transition and payment must record an actor in the audit log.
