@@ -19,13 +19,12 @@ namespace PosCs.Infrastructure.Persistence
         }
 
         /// <summary>
-        /// Balance mirrors ClientService.GetStatement exactly: posted invoices minus
-        /// all received payments (cash-sale auto payments cancel their own invoice).
+        /// Balance is the total of active dry-clean orders minus recorded payments.
         /// Rounded to 2 decimals so the zero filter is not tripped by float noise.
         /// </summary>
         private const string BalanceExpr =
-            "ROUND(COALESCE((SELECT SUM(totalAmount) FROM Invoice WHERE clientId = c.id AND status = 'posted'), 0) " +
-            "- COALESCE((SELECT SUM(amount) FROM Payment WHERE clientId = c.id), 0), 2)";
+            "ROUND(COALESCE((SELECT SUM(totalAmount) FROM DryCleanOrder WHERE clientId = c.id AND status <> 'cancelled'), 0) " +
+            "- COALESCE((SELECT SUM(amount) FROM DryCleanOrderPayment p JOIN DryCleanOrder o ON o.id = p.orderId WHERE o.clientId = c.id), 0), 2)";
 
         public PagedResult<Client> GetPaged(int page, int pageSize, string query, string balanceFilter)
         {

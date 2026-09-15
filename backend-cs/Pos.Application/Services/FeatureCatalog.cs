@@ -11,17 +11,7 @@ namespace PosCs.Application.Services
     {
         public static readonly System.Collections.Generic.IReadOnlyList<string> Keys = new List<string>
         {
-            "multiple_units",
-            "multiple_barcodes",
-            "wholesale_price",
-            "product_discount",
-            "invoice_discount",
-            "price_override",
-            "low_stock_report",
-            "receipt_printing",
-            "barcode_printing",
-            "categories",
-            "brands"
+            "dry_clean"
         };
 
         public static bool IsKnown(string key)
