@@ -8,8 +8,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 - **Backend**: .NET Framework 4.8 OWIN self-host (port 3001) at `backend-cs/`
   - Dapper + SQLite, custom SQL migrations (`Database/Migrations/`)
-  - Controllers: Products, Invoices, License, Printing, Health
-  - Print: RawPrinterHelper (winspool.drv P/Invoke) + ReceiptService (ESC/POS)
+  - Controllers: Dry Clean Orders, Clients, Employees, Shifts, Expenses, License, Printing, Health
+  - Print: RawPrinterHelper (winspool.drv P/Invoke) + receipt rendering (ESC/POS)
   - Build: `dotnet build backend-cs/pos-cs.csproj --configuration Release`
 - **Frontend**: Next.js static export at `src/`
   - All pages are client components (no Server Actions or SSR)
@@ -27,13 +27,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Conventions
 
-- **All filtering/sorting/pagination is server-side** — the only exception is low-stock report snapshot (local `useMemo` filter).
+- **All filtering/sorting/pagination is server-side**.
 - **All mutations go through TanStack Query**: call the action/mutation, then `invalidateQueries({queryKey: xKeys.all})` on success.
-- **Cache keys**: every feature exports `*Keys` (e.g. `invoicesKeys`, `productsKeys`, `shiftsKeys`). Always invalidate `*.all` after mutation. Paged keys: `*.paged(page, pageSize, filter)`.
+- **Cache keys**: every feature exports `*Keys` (e.g. `dryCleanKeys`, `shiftsKeys`). Always invalidate `*.all` after mutation. Paged keys: `*.paged(page, pageSize, filter)`.
 - **RTL**: Arabic is the primary locale. Sidebar uses `side="right"` (physical positioning). Numbers use `dir="ltr"` on inputs.
 - **Tooltips**: use `TooltipIconButton` (from `@/components/common/tooltip-icon-button`) instead of bare `<Button size="icon">`. It requires a `label` prop (mandatory, replaces `aria-label`/`title`).
-- **Translations**: `messages/ar.json` at project root. Namespaces correspond to page areas (Products, Invoices, Purchases, Returns, Reports, etc.). `useTranslations("Namespace")`.
-- **Shared data hooks**: e.g. `useAllProducts()`, `useAllBrands()`, `useAllCategories()`, `useAllUnits()`, `useActiveShift()`.
+- **Translations**: `messages/ar.json` at project root. Use `useTranslations("Namespace")`.
+- **Shared data hooks**: `useActiveClients()`, `useActiveEmployees()`, and `useActiveShift()`.
 
 # Code style
 

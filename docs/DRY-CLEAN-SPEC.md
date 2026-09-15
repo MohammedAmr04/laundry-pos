@@ -2,7 +2,7 @@
 
 ## Objective
 
-Replace the current general POS with a Dry Clean-only application. The system receives customer garments, tracks preparation and ironing, records the single ironer who completed an order, prints intake and ready-for-delivery receipts, manages delivery, and records full, partial, or deferred payments.
+Provide a focused Dry Clean-only application. The system receives customer garments, tracks preparation and ironing, records the single ironer who completed an order, prints intake and ready-for-delivery receipts, manages delivery, and records full, partial, or deferred payments.
 
 ## Confirmed Business Rules
 
@@ -116,7 +116,7 @@ Productivity is generated once per order completion and must be idempotent.
 
 ## Removed Modules
 
-Products, product units, barcodes, categories, brands, purchases, suppliers, purchase returns, sale returns, stock movements, cost layers, inventory adjustments, bundles, wholesale pricing, low-stock reports, and product POS checkout.
+Product catalogs, inventory, purchasing, supplier management, stock movements, bundles, wholesale pricing, and retail checkout.
 
 ## Permissions
 

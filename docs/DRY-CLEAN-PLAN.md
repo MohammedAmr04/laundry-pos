@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Dry Clean edition will extend the POS v2 foundation with a controlled workflow for receiving garments from a customer, tracking the order through processing, and completing delivery and payment.
+The Dry Clean edition provides a focused workflow for receiving garments from a customer, tracking the order through processing, and completing delivery and payment.
 
 This is a service-order workflow, not a purchase workflow. The garments remain the customer's property and must not be treated as saleable inventory.
 
@@ -154,5 +154,5 @@ Audit events should cover:
 - Payment and remaining balance are correct.
 - A manager can review exceptions and cancellations.
 - All sensitive changes appear in the audit log.
-- The normal POS sales workflow continues to work independently.
+- The application remains focused on service orders and does not include retail sales.
 
