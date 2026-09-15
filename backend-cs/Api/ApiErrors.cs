@@ -16,8 +16,7 @@ namespace PosCs.Api
                 || ex is NotFoundException
                 || ex is PermissionDeniedException
                 || ex is FeatureDisabledException
-                || ex is LoginLockedException
-                || ex is InsufficientStockException;
+                || ex is LoginLockedException;
         }
 
         public static HttpResponseMessage From(HttpRequestMessage request, Exception ex, string fallbackMessage)
@@ -30,8 +29,6 @@ namespace PosCs.Api
                 return Error(request, HttpStatusCode.Forbidden, ex.Message);
             if (ex is LoginLockedException)
                 return Error(request, (HttpStatusCode)429, ex.Message);
-            if (ex is InsufficientStockException)
-                return Error(request, HttpStatusCode.BadRequest, ex.Message);
             return Error(request, HttpStatusCode.InternalServerError, fallbackMessage);
         }
 

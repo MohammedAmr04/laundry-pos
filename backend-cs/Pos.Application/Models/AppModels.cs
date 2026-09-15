@@ -8,16 +8,6 @@ namespace PosCs.Application.Models
         public int Total { get; set; }
     }
 
-    public sealed class InvoicePageResult
-    {
-        public List<Domain.Entities.Invoice> Items { get; set; } = new List<Domain.Entities.Invoice>();
-        public int Total { get; set; }
-        public double Revenue { get; set; }
-        public double Discounts { get; set; }
-        /// <summary>Invoice-linked payment totals by invoice id (payment-status badges).</summary>
-        public Dictionary<string, double> PaidByInvoice { get; set; } = new Dictionary<string, double>();
-    }
-
     public sealed class AccessBundle
     {
         public Domain.Entities.User User { get; set; }

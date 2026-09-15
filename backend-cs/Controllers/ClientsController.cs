@@ -112,48 +112,5 @@ namespace PosCs.Controllers
 
         // NOTE: no DELETE — credit sales require a stable client identity; deactivate instead (spec §10.2).
 
-        [Route("{id}/statement")]
-        [HttpGet]
-        [RequirePermission("clients.view")]
-        public HttpResponseMessage GetStatement(string id)        {
-            try
-            {
-                var statement = _service.GetStatement(id);
-                return Request.CreateResponse(HttpStatusCode.OK, new
-                {
-                    partyId = statement.PartyId,
-                    balance = statement.Balance,
-                    entries = statement.Entries
-                });
-            }
-            catch (Exception ex)
-            {
-                if (ApiErrors.IsHandled(ex)) return ApiErrors.From(Request, ex, null);
-                Console.Error.WriteLine($"[API ERR] Failed to fetch client statement {id}: {ex}");
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Failed to fetch client statement");
-            }
-        }
-
-        [Route("{id}/invoices")]
-        [HttpGet]
-        [RequirePermission("clients.view")]
-        public HttpResponseMessage GetInvoices(string id)
-        {
-            try
-            {
-                var result = _service.GetInvoices(id);
-                return Request.CreateResponse(HttpStatusCode.OK, new
-                {
-                    items = result.Items,
-                    paidByInvoice = result.PaidByInvoice
-                });
-            }
-            catch (Exception ex)
-            {
-                if (ApiErrors.IsHandled(ex)) return ApiErrors.From(Request, ex, null);
-                Console.Error.WriteLine($"[API ERR] Failed to fetch client invoices {id}: {ex}");
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Failed to fetch client invoices");
-            }
-        }
     }
 }

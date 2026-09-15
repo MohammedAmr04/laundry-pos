@@ -64,13 +64,6 @@ namespace PosCs.Application.Services
             return _shifts.GetReport(id);
         }
 
-        public PagedResult<Invoice> GetShiftInvoices(string id, int page, int pageSize)
-        {
-            if (pageSize > 100) pageSize = 100;
-            if (page < 1) page = 1;
-            return _shifts.GetShiftInvoices(id, page, pageSize);
-        }
-
         public CashDrawerMovement CreateDrawerMovement(string shiftId, CreateCashDrawerMovementRequest request, string userId)
         {
             if (request == null || (request.Type != "paid_in" && request.Type != "paid_out"))
