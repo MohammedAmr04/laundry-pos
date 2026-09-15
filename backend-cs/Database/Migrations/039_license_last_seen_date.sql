@@ -1,1 +1,0 @@
-ALTER TABLE "Settings" ADD COLUMN "lastSeenDate" DATETIME NULL;
