@@ -1234,5 +1234,29 @@
     "receiptHeader": "سطر إعلاني أعلى الفاتورة",
     "receiptHeaderPlaceholder": "(اختياري)",
     "receiptFooter": "رسالة أسفل الفاتورة"
+  },
+  "DryClean": {
+    "title": "طلبات التنظيف والكي",
+    "subtitle": "استلام الطلبات ومتابعة الجاهز للتسليم",
+    "newOrder": "طلب جديد",
+    "addLine": "إضافة قطعة",
+    "saveOrder": "حفظ الطلب",
+    "orders": "الطلبات",
+    "productivity": "إنتاجية المكوجي",
+    "selectClient": "اختر العميل",
+    "receivingEmployee": "عامل الاستلام",
+    "status": {
+      "received": "مستلم",
+      "processing": "جاري التجهيز",
+      "needsReview": "مراجعة",
+      "ready": "جاهز",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغي"
+    },
+    "messages": {
+      "createdAndPrinted": "تم إنشاء الطلب وطباعة إيصال الاستلام",
+      "createFailed": "تم إنشاء الطلب لكن تعذر الطباعة أو الحفظ",
+      "operationFailed": "تعذر تنفيذ العملية"
+    }
   }
 }

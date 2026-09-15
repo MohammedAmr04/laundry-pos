@@ -239,6 +239,71 @@ export interface Client {
   balance?: number
 }
 
+export interface DryCleanOrderLine {
+  id: string
+  orderId: string
+  garmentType: string
+  serviceDescription: string
+  quantity: number
+  colorOrDescription: string | null
+  conditionBefore: string | null
+  damageNotes: string | null
+  processingNotes: string | null
+  unitPrice: number
+  lineTotal: number
+  countsForProductivity: boolean
+  isManualEntry: boolean
+}
+
+export interface DryCleanOrder {
+  id: string
+  orderNumber: number
+  clientId: string
+  deliveryAddress: string
+  status: 'received' | 'processing' | 'needs_review' | 'ready' | 'delivered' | 'cancelled'
+  receivedByEmployeeId: string
+  assignedIronerId: string | null
+  deliveredByEmployeeId: string | null
+  receivedAt: string
+  expectedDeliveryAt: string | null
+  readyAt: string | null
+  deliveredAt: string | null
+  subtotal: number
+  discountAmount: number
+  totalAmount: number
+  paidAmount: number
+  remainingAmount: number
+  notes: string | null
+  lines: DryCleanOrderLine[]
+}
+
+export interface DryCleanLineInput {
+  garmentType: string
+  serviceDescription: string
+  quantity: number
+  colorOrDescription?: string
+  conditionBefore?: string
+  damageNotes?: string
+  processingNotes?: string
+  unitPrice: number
+  countsForProductivity: boolean
+  isManualEntry: boolean
+}
+
+export interface CreateDryCleanOrderRequest {
+  clientId: string
+  deliveryAddress?: string
+  receivedByEmployeeId: string
+  assignedIronerId?: string
+  expectedDeliveryAt?: string
+  notes?: string
+  lines: DryCleanLineInput[]
+}
+
+export type DryCleanPaymentMethod = "cash" | "wallet" | "instapay"
+
+export interface DryCleanProductivitySummary { employeeId: string; employeeName: string; ordersCompleted: number; countedQuantity: number }
+
 export type BalanceFilter = "all" | "positive" | "negative" | "zero"
 
 export interface Employee {

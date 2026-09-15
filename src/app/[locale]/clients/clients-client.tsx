@@ -4,14 +4,13 @@ import { useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
 import { useApiError } from "@/lib/api-error"
 import { toast } from "sonner"
-import { CircleCheck, CircleX, Pencil, Plus, ScrollText, Wallet } from "lucide-react"
+import { CircleCheck, CircleX, Pencil, Plus } from "lucide-react"
 
 import { BalanceFilter, Client } from "@/types/domain/domain.types"
 import { useClientsPage } from "@/hooks/use-clients"
 import { updateClient } from "@/actions/clients.actions"
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback"
 import { useAuth } from "@/components/common/auth-context"
-import { useRouter } from "@/i18n/navigation"
 import { PERMISSIONS } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,7 +25,6 @@ import { TableColumn, TableBuilder } from "@/components/common/table-builder"
 import { DataPagination } from "@/components/common/data-pagination"
 import { TooltipIconButton } from "@/components/common/tooltip-icon-button"
 import { ClientFormDialog } from "./_components/client-form-dialog"
-import { RecordPaymentDialog } from "@/components/common/record-payment-dialog"
 
 const PAGE_SIZE = 20
 
@@ -34,11 +32,9 @@ export function ClientsClient() {
   const t = useTranslations("Clients")
   const tc = useTranslations("Common")
   const resolveError = useApiError()
-  const router = useRouter()
   const { hasPermission } = useAuth()
   const canCreate = hasPermission(PERMISSIONS.CLIENTS_CREATE)
   const canUpdate = hasPermission(PERMISSIONS.CLIENTS_UPDATE)
-  const canCreatePayments = hasPermission(PERMISSIONS.PAYMENTS_CREATE)
 
   const [page, setPage] = useState(1)
   const [query, setQuery] = useState("")
@@ -47,7 +43,6 @@ export function ClientsClient() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingClient, setEditingClient] = useState<Client | null>(null)
   const [formSession, setFormSession] = useState(0)
-  const [paymentFor, setPaymentFor] = useState<Client | null>(null)
 
   const debouncedQueryChange = useDebouncedCallback((value: string) => {
     setQuery(value)
@@ -139,14 +134,6 @@ export function ClientsClient() {
       headClassName: "w-40",
       cell: (client) => (
         <div className="flex items-center gap-1">
-          {canCreatePayments && (
-            <TooltipIconButton label={t("recordPayment")} onClick={() => setPaymentFor(client)}>
-              <Wallet className="h-4 w-4" />
-            </TooltipIconButton>
-          )}
-          <TooltipIconButton label={t("statement")} onClick={() => router.push(`/clients/statement?id=${client.id}`)}>
-            <ScrollText className="h-4 w-4" />
-          </TooltipIconButton>
           {canUpdate && (
             <>
               <TooltipIconButton
@@ -220,14 +207,6 @@ export function ClientsClient() {
         client={editingClient}
       />
 
-      <RecordPaymentDialog
-        kind="client"
-        party={paymentFor}
-        open={!!paymentFor}
-        onOpenChange={(open) => {
-          if (!open) setPaymentFor(null)
-        }}
-      />
     </>
   )
 }

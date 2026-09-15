@@ -1,100 +1,25 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
-import { useTranslations } from "next-intl"
+import { ClipboardList, Shirt, UsersRound } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Package, ShoppingCart, DollarSign } from "lucide-react"
 import { Link } from "@/i18n/navigation"
-import { Button } from "@/components/ui/button"
-import { countProducts } from "@/api/products"
-import { listInvoicesPaged } from "@/api/invoices"
-import { productsKeys } from "@/hooks/use-products"
-import { format } from "date-fns"
-import { useAuth } from "@/components/common/auth-context"
-import { PERMISSIONS } from "@/lib/constants"
+import { useDryCleanOrders } from "@/hooks/use-dry-clean"
+import { useActiveClients } from "@/hooks/use-clients"
 
 export default function DashboardPage() {
-  const t = useTranslations("Dashboard")
-  const { hasPermission, hasAccess } = useAuth()
-  const canViewProducts = hasPermission(PERMISSIONS.PRODUCTS_VIEW)
-  const canViewInvoices = hasPermission(PERMISSIONS.INVOICES_VIEW)
-  const canUsePOS = hasAccess(PERMISSIONS.INVOICES_CREATE) && hasPermission(PERMISSIONS.PRODUCTS_VIEW)
+  const { data: orders } = useDryCleanOrders(1, 1)
+  const { data: clients = [] } = useActiveClients()
+  const { data: ready } = useDryCleanOrders(1, 1, "ready")
+  const { data: processing } = useDryCleanOrders(1, 1, "processing")
 
-  const { data: productsCount = 0 } = useQuery({
-    queryKey: productsKeys.count(),
-    queryFn: countProducts,
-    enabled: canViewProducts,
-  })
-
-  // Aggregate today's stats on the backend; pageSize=1 keeps the payload tiny.
-  const { data: todayInvoices } = useQuery({
-    queryKey: ["invoices", "paged", 1, 1, { from: format(new Date(), "yyyy-MM-dd") }],
-    queryFn: () => listInvoicesPaged(1, 1, { from: format(new Date(), "yyyy-MM-dd") }),
-    enabled: canViewInvoices,
-  })
-
-  const revenue = todayInvoices?.totals.revenue ?? 0
-  const salesCount = todayInvoices?.total ?? 0
-  const discountGiven = todayInvoices?.totals.discounts ?? 0
-
-  return (
-    <div className="flex-1 space-y-4 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("todayRevenue")}</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{revenue.toFixed(2)}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("salesCount")}</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+{salesCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("discountsGiven")}</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{discountGiven.toFixed(2)}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("productsInDb")}</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{productsCount}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-8">
-        <Card className="col-span-4 flex flex-col justify-center items-center py-10">
-          <h3 className="text-lg font-semibold mb-4">{t("quickActions")}</h3>
-          <div className="flex gap-4">
-            {canUsePOS && (
-              <Link href="/pos">
-                <Button size="lg" className="h-16">
-                  <ShoppingCart className="mr-2 h-5 w-5" /> {t("openPOS")}
-                </Button>
-              </Link>
-            )}
-          </div>
-        </Card>
-      </div>
+  return <div className="space-y-6 pt-6">
+    <div><h1 className="text-3xl font-bold">لوحة تحكم التنظيف والكي</h1><p className="text-muted-foreground">متابعة الطلبات والإنتاجية والتسليم</p></div>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card><CardHeader><CardTitle className="flex items-center gap-2 text-sm"><ClipboardList className="h-4 w-4" /> كل الطلبات</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{orders?.total ?? 0}</div></CardContent></Card>
+      <Card><CardHeader><CardTitle className="flex items-center gap-2 text-sm"><Shirt className="h-4 w-4" /> قيد التشغيل</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{processing?.total ?? 0}</div></CardContent></Card>
+      <Card><CardHeader><CardTitle className="flex items-center gap-2 text-sm"><Shirt className="h-4 w-4" /> جاهز للتسليم</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{ready?.total ?? 0}</div></CardContent></Card>
+      <Card><CardHeader><CardTitle className="flex items-center gap-2 text-sm"><UsersRound className="h-4 w-4" /> العملاء</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{clients.length}</div></CardContent></Card>
     </div>
-  )
+    <Link href="/dry-clean" className="inline-flex rounded-md bg-primary px-4 py-2 text-primary-foreground">إنشاء طلب تنظيف جديد</Link>
+  </div>
 }

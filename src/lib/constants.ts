@@ -1,4 +1,14 @@
 export const PERMISSIONS = {
+  DRY_CLEAN_ORDERS_VIEW: 'dry_clean.orders.view',
+  DRY_CLEAN_ORDERS_CREATE: 'dry_clean.orders.create',
+  DRY_CLEAN_ORDERS_UPDATE: 'dry_clean.orders.update',
+  DRY_CLEAN_ORDERS_PROCESS: 'dry_clean.orders.process',
+  DRY_CLEAN_ORDERS_COMPLETE: 'dry_clean.orders.complete',
+  DRY_CLEAN_ORDERS_DELIVER: 'dry_clean.orders.deliver',
+  DRY_CLEAN_PAYMENTS_CREATE: 'dry_clean.payments.create',
+  DRY_CLEAN_REPORTS_VIEW: 'dry_clean.reports.view',
+  DRY_CLEAN_PRODUCTIVITY_VIEW: 'dry_clean.productivity.view',
+  DRY_CLEAN_PRINT_RECEIPT: 'dry_clean.print.receipt',
   PRODUCTS_VIEW: 'products.view',
   PRODUCTS_CREATE: 'products.create',
   PRODUCTS_UPDATE: 'products.update',
@@ -71,6 +81,7 @@ export const FEATURES = {
   BARCODE_PRINTING: 'barcode_printing',
   CATEGORIES: 'categories',
   BRANDS: 'brands',
+  DRY_CLEAN: 'dry_clean',
 } as const
 
 export const PERMISSION_LABELS: Record<string, string> = {
@@ -162,4 +173,5 @@ export const FEATURE_LABELS: Record<string, { name: string; description: string 
   barcode_printing: { name: 'طباعة الباركود', description: 'طباعة ملصقات الباركود' },
   categories: { name: 'الفئات', description: 'تصنيف المنتجات في فئات (بدون الفئات تظهر كأخرى)' },
   brands: { name: 'الماركات', description: 'ربط المنتجات بالماركة أو الشركة المصنعة' },
+  dry_clean: { name: 'التنظيف الجاف', description: 'إدارة طلبات التنظيف والكي والتسليم' },
 }
