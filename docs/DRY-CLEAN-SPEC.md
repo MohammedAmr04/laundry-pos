@@ -2,32 +2,28 @@
 
 ## Objective
 
-Provide a focused Dry Clean-only application. The system receives customer garments, tracks preparation and ironing, records the single ironer who completed an order, prints intake and ready-for-delivery receipts, manages delivery, and records full, partial, or deferred payments.
+Provide a focused Dry Clean-only application. The system receives customer garments, tracks preparation and ironing, records the single ironer who prepared an order, prints intake and delivery/ironer receipts, manages delivery, and records full, partial, or deferred payments.
 
 ## Confirmed Business Rules
 
 - A dry-clean order contains a customer, delivery address, garment/service lines, quantities, unit prices, and totals.
 - The employee who receives the order, the ironer, and the delivery employee are recorded separately.
-- One order has at most one ironer. The ironer may be assigned at creation or when the order is completed.
+- One order has at most one ironer. The ironer may be assigned at creation, while received, or while prepared.
 - Each line has a productivity flag. Only flagged quantities count toward the ironer's daily productivity.
-- Productivity is credited when the order is completed, not piece-by-piece.
+- Productivity is credited when the order is prepared, not piece-by-piece.
 - Carpet and special manual-cleaning lines may be excluded from productivity.
-- Service type, garment type, and price are entered manually. Historical order prices are immutable after completion.
+- Service type, garment type, and default price are selected from the dry-clean catalog. Historical order lines store a snapshot and remain independent from later catalog edits.
 - An intake receipt is printable when the order is created.
-- The order becomes ready for delivery after ironing is completed and the ready receipt can be printed.
+- The order becomes prepared after ironing is completed and the delivery/ironer receipt can be printed.
 - Delivery may be made with a zero, partial, or outstanding balance.
 - Payment methods are cash, wallet, and Instapay.
 - Payments can be recorded during delivery or later.
 
 ## Order Statuses
 
-`received -> processing -> ready -> delivered`
+`received -> prepared -> delivered`
 
-`received -> cancelled`
-
-`processing -> needs_review -> ready`
-
-Every transition records actor and timestamp. Delivered and cancelled orders are immutable except through an explicit correction flow added later.
+Every transition records actor and timestamp in status history. `cancelled` is reserved in the schema for a future correction flow but is not exposed as an active workflow action.
 
 ## Core Schema
 
@@ -38,11 +34,10 @@ Every transition records actor and timestamp. Delivered and cancelled orders are
 - `clientId`
 - `deliveryAddress`
 - `status`
-- `receivedByUserId`
+- `receivedByEmployeeId`
 - `assignedIronerId` (nullable)
 - `deliveredByEmployeeId` (nullable)
 - `receivedAt`
-- `processingStartedAt`
 - `completedAt`
 - `readyAt`
 - `deliveredAt`
@@ -101,17 +96,15 @@ Every transition records actor and timestamp. Delivered and cancelled orders are
 - `completedAt`
 - `createdAt`
 
-Productivity is generated once per order completion and must be idempotent.
+Productivity is generated once per order preparation and must be idempotent.
 
 ## Required Modules
 
-- Dry Clean orders, lines, status history, payments, productivity, and reports
+- Dry Clean orders, lines, status history, payments, productivity, catalog, services, and reports
 - Customers
 - Employees
 - Authentication, users, roles, permissions
 - Printing and printer settings
-- Shifts and cash reconciliation
-- Expenses
 - Audit log
 
 ## Removed Modules
@@ -131,6 +124,8 @@ Product catalogs, inventory, purchasing, supplier management, stock movements, b
 - `dry_clean.reports.view`
 - `dry_clean.productivity.view`
 - `dry_clean.print.receipt`
+- `dry_clean.catalog.view`
+- `dry_clean.catalog.manage`
 
 ## Verification
 

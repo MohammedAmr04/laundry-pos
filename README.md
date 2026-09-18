@@ -22,7 +22,7 @@ npm run dev
 dotnet run --project backend-cs/pos-cs.csproj
 ```
 
-For the packaged application, run `start.bat`. The backend listens on `http://localhost:3001`, serves the API and static frontend, and applies `backend-cs/Database/Migrations/001_dry_clean_baseline.sql` on startup. The SQLite database is stored in the `data/` directory beside the executable.
+For the packaged application, run `start.bat`. The backend listens on `http://localhost:3001`, serves the API and static frontend, and applies all pending SQL migrations from `backend-cs/Database/Migrations/` on startup. The SQLite database is stored in the `data/` directory beside the executable.
 
 Default credentials are `admin` / `1234`. Change them after the first login.
 
@@ -30,7 +30,7 @@ Default credentials are `admin` / `1234`. Change them after the first login.
 
 - `backend-cs/`: C# .NET Framework 4.8, OWIN Web API, Dapper, and SQLite.
 - `src/`: Next.js static export, React, TypeScript, and TanStack Query.
-- `backend-cs/Database/Migrations/`: The current database baseline.
+- `backend-cs/Database/Migrations/`: Ordered SQL migrations for the dry-clean schema and incremental updates.
 - `messages/ar.json`: Arabic UI translations.
 - `docs/DRY-CLEAN-PLAN.md`: Delivery plan.
 - `docs/DRY-CLEAN-SPEC.md`: Detailed functional specification.
@@ -62,8 +62,7 @@ erDiagram
     EMPLOYEE ||--o{ DRY_CLEAN_PRODUCTIVITY : earns
     USER ||--o{ DRY_CLEAN_ORDER_STATUS_HISTORY : changes
     USER ||--o{ DRY_CLEAN_ORDER_PAYMENT : records
-    SHIFT ||--o{ EXPENSE : contains
-    SHIFT ||--o{ CASH_DRAWER_MOVEMENT : contains
+    DRY_CLEAN_SERVICE_DEFINITION ||--o{ DRY_CLEAN_CATALOG_ITEM : defines
 
     CLIENT { string id PK string name string phone string address }
     EMPLOYEE { string id PK string name string phone boolean isActive }
@@ -72,10 +71,9 @@ erDiagram
     DRY_CLEAN_ORDER_PAYMENT { string id PK string orderId FK decimal amount string paymentMethod datetime paidAt }
     DRY_CLEAN_PRODUCTIVITY { string id PK string orderId FK string ironerEmployeeId FK int countedQuantity datetime completedAt }
     DRY_CLEAN_ORDER_STATUS_HISTORY { string id PK string orderId FK string fromStatus string toStatus string changedByUserId FK }
+    DRY_CLEAN_CATALOG_ITEM { string id PK string garmentType string serviceDescription decimal unitPrice boolean isActive }
+    DRY_CLEAN_SERVICE_DEFINITION { string id PK string name boolean isActive }
     USER { string id PK string tenantId FK string username }
-    SHIFT { string id PK int number string status decimal openingCash }
-    EXPENSE { string id PK string shiftId FK decimal amount string paymentMethod }
-    CASH_DRAWER_MOVEMENT { string id PK string shiftId FK string type decimal amount }
 ```
 
 ## Backup

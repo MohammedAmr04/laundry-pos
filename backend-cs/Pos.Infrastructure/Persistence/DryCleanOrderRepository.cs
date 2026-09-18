@@ -64,7 +64,7 @@ namespace PosCs.Infrastructure.Persistence
                 if (!string.IsNullOrWhiteSpace(clientId)) { where.Add("o.clientId=@clientId"); args.Add("clientId", clientId); }
                 if (paymentStatus == "paid") { where.Add("o.totalAmount <= COALESCE((SELECT SUM(amount) FROM DryCleanOrderPayment p WHERE p.orderId=o.id), 0)"); }
                 else if (paymentStatus == "credit") { where.Add("o.totalAmount > COALESCE((SELECT SUM(amount) FROM DryCleanOrderPayment p WHERE p.orderId=o.id), 0)"); }
-                if (!string.IsNullOrWhiteSpace(query)) { where.Add("(CAST(o.orderNumber AS TEXT) LIKE @query OR o.clientId IN (SELECT id FROM Client WHERE name LIKE @query OR phone LIKE @query))"); args.Add("query", "%" + query.Trim() + "%"); }
+                if (!string.IsNullOrWhiteSpace(query)) { where.Add("(CAST(o.orderNumber AS TEXT) LIKE @query ESCAPE '\\' OR o.clientId IN (SELECT id FROM Client WHERE name LIKE @query ESCAPE '\\' OR phone LIKE @query ESCAPE '\\'))"); args.Add("query", "%" + EscapeLike(query.Trim()) + "%"); }
                 var filter = where.Count == 0 ? "" : " WHERE " + string.Join(" AND ", where);
                 var total = conn.ExecuteScalar<int>("SELECT COUNT(1) FROM DryCleanOrder o" + filter, args);
                 var items = conn.Query<DryCleanOrder>("SELECT o.*, c.name AS ClientName FROM DryCleanOrder o LEFT JOIN Client c ON c.id=o.clientId" + filter + " ORDER BY o.createdAt DESC LIMIT @pageSize OFFSET @offset", args).ToList();
@@ -129,5 +129,10 @@ namespace PosCs.Infrastructure.Persistence
             if (invalidLines > 0 || order.TotalAmount <= 0) throw new DomainValidationException("All order items must have a price greater than zero");
         }
         private static void AddHistory(SqliteConnection conn, SqliteTransaction tx, string id, string from, string to, string actor) { if (string.IsNullOrWhiteSpace(actor)) return; conn.Execute("INSERT INTO DryCleanOrderStatusHistory (id,orderId,fromStatus,toStatus,changedByUserId,createdAt) VALUES (@id,@orderId,@fromStatus,@toStatus,@actor,@createdAt)", new { id = Guid.NewGuid().ToString("N"), orderId = id, fromStatus = from, toStatus = to, actor, createdAt = DateTime.Now }, tx); }
+
+        private static string EscapeLike(string input)
+        {
+            return input.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
+        }
     }
 }
