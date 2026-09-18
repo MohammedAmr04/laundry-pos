@@ -5,6 +5,7 @@ export const PERMISSIONS = {
   DRY_CLEAN_ORDERS_PROCESS: 'dry_clean.orders.process',
   DRY_CLEAN_ORDERS_COMPLETE: 'dry_clean.orders.complete',
   DRY_CLEAN_ORDERS_DELIVER: 'dry_clean.orders.deliver',
+  DRY_CLEAN_ORDERS_CANCEL: 'dry_clean.orders.cancel',
   DRY_CLEAN_PAYMENTS_CREATE: 'dry_clean.payments.create',
   DRY_CLEAN_REPORTS_VIEW: 'dry_clean.reports.view',
   DRY_CLEAN_PRODUCTIVITY_VIEW: 'dry_clean.productivity.view',
@@ -87,6 +88,19 @@ export const FEATURES = {
 } as const
 
 export const PERMISSION_LABELS: Record<string, string> = {
+  'dry_clean.orders.view': 'عرض طلبات التنظيف والكي',
+  'dry_clean.orders.create': 'إنشاء طلبات التنظيف والكي',
+  'dry_clean.orders.update': 'تعديل طلبات التنظيف والكي',
+  'dry_clean.orders.process': 'تعيين المكوجي',
+  'dry_clean.orders.complete': 'تجهيز طلبات التنظيف والكي',
+  'dry_clean.orders.deliver': 'تسليم طلبات التنظيف والكي',
+  'dry_clean.orders.cancel': 'إلغاء طلبات التنظيف والكي',
+  'dry_clean.payments.create': 'تسجيل مدفوعات التنظيف والكي',
+  'dry_clean.reports.view': 'عرض تقارير التنظيف والكي',
+  'dry_clean.productivity.view': 'عرض إنتاجية المكوجي',
+  'dry_clean.print.receipt': 'طباعة إيصالات التنظيف والكي',
+  'dry_clean.catalog.view': 'عرض كتالوج القطع والخدمات',
+  'dry_clean.catalog.manage': 'إدارة كتالوج القطع والخدمات',
   'products.view': 'عرض المنتجات',
   'products.create': 'إنشاء المنتجات',
   'products.update': 'تعديل المنتجات',
@@ -107,6 +121,7 @@ export const PERMISSION_LABELS: Record<string, string> = {
   'settings.update': 'تعديل الإعدادات',
   'users.manage': 'إدارة المستخدمين',
   'roles.manage': 'إدارة الأدوار',
+  'audit.view': 'عرض سجل التدقيق',
   'categories.view': 'عرض الفئات',
   'categories.create': 'إنشاء الفئات',
   'categories.update': 'تعديل الفئات',
@@ -141,6 +156,12 @@ export const PERMISSION_LABELS: Record<string, string> = {
 }
 
 export const RESOURCE_LABELS: Record<string, string> = {
+  'dry_clean.orders': 'طلبات التنظيف والكي',
+  'dry_clean.payments': 'مدفوعات التنظيف والكي',
+  'dry_clean.reports': 'تقارير التنظيف والكي',
+  'dry_clean.productivity': 'إنتاجية المكوجي',
+  'dry_clean.print': 'طباعة التنظيف والكي',
+  'dry_clean.catalog': 'كتالوج القطع والخدمات',
   products: 'المنتجات',
   invoices: 'الفواتير',
   discounts: 'الخصومات',
@@ -161,6 +182,8 @@ export const RESOURCE_LABELS: Record<string, string> = {
   payments: 'الدفعات',
   shifts: 'الورديات',
   expenses: 'المصروفات',
+  audit: 'سجل التدقيق',
+  backups: 'النسخ الاحتياطية',
 }
 
 export const FEATURE_LABELS: Record<string, { name: string; description: string }> = {

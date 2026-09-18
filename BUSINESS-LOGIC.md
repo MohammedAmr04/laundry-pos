@@ -7,36 +7,32 @@ This document is the operational reference for the system. Any workflow or calcu
 1. Select an active client and the receiving employee.
 2. Read the client's address from `Client.address` and store it as a snapshot in `DryCleanOrder.deliveryAddress` when the order is created.
 3. An order contains one or more lines. Each line records garment type, service, quantity, price, color/description, and condition details when needed.
-4. Services and prices are entered manually. Carpets and special cleaning do not require a separate catalog.
+4. Services and prices are selected from the dry-clean catalog. Catalog items store garment type, service, default price, productivity eligibility, and whether the item is a manual-entry item.
 5. An expected delivery date and order notes are optional.
 6. Print the intake receipt after the order is created.
 
 ## Order Statuses
 
 ```text
-received -> processing -> ready -> delivered
-received -> cancelled
-processing -> needs_review -> ready
+received -> prepared -> delivered
 ```
 
 - `received`: The garments have been received and processing has not started.
-- `processing`: The order is being handled by the production team.
-- `needs_review`: The order requires review before it can be marked ready.
-- `ready`: The ironer completed the order and it is ready for delivery.
+- `prepared`: The ironer completed the order and it is ready for delivery.
 - `delivered`: The order was handed to the customer or delivery recipient.
-- `cancelled`: The order was cancelled and is excluded from operational calculations.
+- `cancelled`: Reserved for a future correction/cancellation flow. It is allowed by the schema but not exposed as an active workflow action.
 
-Delivery is not allowed before `ready`. Processing can start only from `received`. Payments cannot exceed the order total.
+Delivery is not allowed before `prepared`. Preparing can happen only from `received`. Payments cannot exceed the remaining order balance.
 
 ## Productivity
 
-- Exactly one ironer is recorded when an order is completed.
-- The ironer may be selected at intake or at completion.
-- Productivity is calculated once when the order is completed, not piece by piece.
+- Exactly one ironer is recorded when an order is prepared.
+- The ironer may be selected at intake, while received, or while prepared.
+- Productivity is calculated once when the order is prepared, not piece by piece.
 - `countedQuantity` is the sum of `quantity` for lines where `countsForProductivity = true`.
 - Carpets and services excluded from productivity use `countsForProductivity = false`.
 - `isManualEntry` indicates that a line was entered manually; it does not determine productivity eligibility by itself.
-- One `DryCleanProductivity` record is created for each completed order.
+- One `DryCleanProductivity` record is created for each prepared order.
 
 ## Payments and Credit
 
@@ -46,7 +42,7 @@ Delivery is not allowed before `ready`. Processing can start only from `received
 - `paidAmount` is the sum of all payments for the order.
 - `remainingAmount = max(totalAmount - paidAmount, 0)`.
 - A payment greater than the remaining balance is rejected.
-- Payments can be recorded at intake, during processing, at delivery, or later.
+- Payments can be recorded at intake, while received/prepared, at delivery, or later.
 
 ## Delivery
 
@@ -60,25 +56,25 @@ Delivery is not allowed before `ready`. Processing can start only from `received
 - `subtotal` is the sum of all line totals.
 - `totalAmount = subtotal - discountAmount`; discount is currently zero by default unless a new business rule enables it.
 - Financial values cannot be negative.
-- Cancelled orders are excluded from client balances and operational reports.
+- Cancelled orders are reserved for a future correction flow and should be excluded from operational calculations when that flow is implemented.
 
 ## Permissions and Audit
 
 - Viewing, creating, and updating orders are separate permissions.
-- Starting processing, completing an order, and delivering an order are separate permissions.
+- Assigning the ironer, preparing an order, and delivering an order are separate permissions.
 - Recording payments, printing receipts, and viewing productivity are separate permissions.
 - The user's permission is not sufficient by itself; the tenant's `dry_clean` capability must also be enabled.
-- Status changes and payments must be traceable through the audit log.
+- Status changes are traceable through `DryCleanOrderStatusHistory`. Payments are traceable through `DryCleanOrderPayment.createdByUserId`. Catalog/service changes and database backup actions are recorded in `AuditLog`.
 
 ## Database Rules
 
-- The new schema has no catalog, purchasing, inventory, or retail-sales invoice tables.
+- The active dry-clean schema has catalog tables for garment/service pricing and no active purchasing, inventory, or retail-sales invoice workflow.
 - Client master data is stored in `Client`; the historical delivery address is stored in `DryCleanOrder`.
-- Every completed order creates one productivity record and cannot create a duplicate record for the same order.
+- Every prepared order creates one productivity record and cannot create a duplicate record for the same order.
 - Critical relationships use foreign keys. Deleting an order must not cascade-delete its productivity or payment history.
 
 ## Printing and Backups
 
 - Print the intake receipt when an order is created.
-- Print the ready-for-delivery sheet when processing is completed; it can be reprinted.
+- Print the delivery/ironer sheet when the order is prepared; it can be reprinted.
 - Cloudinary is optional and used only for database backups, not order processing or productivity calculations.
