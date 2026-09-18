@@ -13,6 +13,7 @@ namespace PosCs.Application.Models
     public sealed class DryCleanPrintRequest
     {
         public bool ReadyCopy { get; set; }
+        public bool IronerCopy { get; set; }
     }
 
     public sealed class PrintInvoicePayload

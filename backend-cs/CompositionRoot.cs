@@ -18,8 +18,6 @@ namespace PosCs
         private static LoginThrottle _throttle;
         private static IClientRepository _clients;
         private static IEmployeeRepository _employees;
-        private static IShiftRepository _shifts;
-        private static IExpenseRepository _expenses;
         private static IPrinterSettingsRepository _printerSettings;
         private static IAuthRepository _auth;
         private static IUsersRepository _users;
@@ -33,11 +31,11 @@ namespace PosCs
         private static PrinterSettingsService _printerSettingsService;
         private static IOperationsRepository _operations;
         private static IDryCleanOrderRepository _dryCleanOrders;
+        private static IDryCleanCatalogRepository _dryCleanCatalog;
+        private static IDryCleanServiceRepository _dryCleanServices;
         private static AuthService _authService;
         private static ClientService _clientService;
         private static EmployeeService _employeeService;
-        private static ShiftService _shiftService;
-        private static ExpenseService _expenseService;
         private static UsersService _usersService;
         private static RolesService _rolesService;
         private static TenantFeaturesService _tenantFeaturesService;
@@ -46,6 +44,8 @@ namespace PosCs
         private static BackupService _backupService;
         private static OperationsService _operationsService;
         private static DryCleanService _dryCleanService;
+        private static DryCleanCatalogService _dryCleanCatalogService;
+        private static DryCleanServiceDefinitionService _dryCleanServiceDefinitionService;
 
         public static IClock Clock => Lazy(ref _clock, () => new SystemClock());
         public static IPasswordHasher Hasher => Lazy(ref _hasher, () => new PasswordHasher());
@@ -54,8 +54,6 @@ namespace PosCs
         public static LoginThrottle Throttle => Lazy(ref _throttle, () => new LoginThrottle(Clock));
         public static IClientRepository ClientsRepo => Lazy(ref _clients, () => new ClientRepository());
         public static IEmployeeRepository EmployeesRepo => Lazy(ref _employees, () => new EmployeeRepository());
-        public static IShiftRepository ShiftsRepo => Lazy(ref _shifts, () => new ShiftRepository());
-        public static IExpenseRepository ExpensesRepo => Lazy(ref _expenses, () => new ExpenseRepository());
         public static IPrinterSettingsRepository PrinterSettingsRepo => Lazy(ref _printerSettings, () => new PrinterSettingsRepository());
         public static IAuthRepository Auth => Lazy(ref _auth, () => new AuthRepository(MachineId));
         public static IUsersRepository UsersRepo => Lazy(ref _users, () => new UsersRepository());
@@ -69,11 +67,11 @@ namespace PosCs
         public static PrinterSettingsService PrinterSettingsService => Lazy(ref _printerSettingsService, () => new PrinterSettingsService(PrinterSettingsRepo));
         public static IOperationsRepository OperationsRepo => Lazy(ref _operations, () => new OperationsRepository());
         public static IDryCleanOrderRepository DryCleanOrdersRepo => Lazy(ref _dryCleanOrders, () => new DryCleanOrderRepository());
+        public static IDryCleanCatalogRepository DryCleanCatalogRepo => Lazy(ref _dryCleanCatalog, () => new DryCleanCatalogRepository());
+        public static IDryCleanServiceRepository DryCleanServiceRepo => Lazy(ref _dryCleanServices, () => new DryCleanServiceRepository());
         public static AuthService AuthService => Lazy(ref _authService, () => new AuthService(Auth, RolesRepo, Hasher, Tokens, Throttle));
         public static ClientService ClientService => Lazy(ref _clientService, () => new ClientService(ClientsRepo));
         public static EmployeeService EmployeeService => Lazy(ref _employeeService, () => new EmployeeService(EmployeesRepo));
-        public static ShiftService ShiftService => Lazy(ref _shiftService, () => new ShiftService(ShiftsRepo));
-        public static ExpenseService ExpenseService => Lazy(ref _expenseService, () => new ExpenseService(ExpensesRepo));
         public static UsersService UsersService => Lazy(ref _usersService, () => new UsersService(UsersRepo, Auth, RolesRepo, Hasher, Access));
         public static RolesService RolesService => Lazy(ref _rolesService, () => new RolesService(RolesRepo, PermissionsRepo));
         public static TenantFeaturesService TenantFeaturesService => Lazy(ref _tenantFeaturesService, () => new TenantFeaturesService(Auth, TenantFeaturesRepo, Access));
@@ -82,6 +80,8 @@ namespace PosCs
         public static BackupService BackupService => Lazy(ref _backupService, () => new BackupService());
         public static OperationsService OperationsService => Lazy(ref _operationsService, () => new OperationsService(OperationsRepo));
         public static DryCleanService DryCleanService => Lazy(ref _dryCleanService, () => new DryCleanService(DryCleanOrdersRepo));
+        public static DryCleanCatalogService DryCleanCatalogService => Lazy(ref _dryCleanCatalogService, () => new DryCleanCatalogService(DryCleanCatalogRepo));
+        public static DryCleanServiceDefinitionService DryCleanServiceDefinitionService => Lazy(ref _dryCleanServiceDefinitionService, () => new DryCleanServiceDefinitionService(DryCleanServiceRepo));
 
         private static T Lazy<T>(ref T field, System.Func<T> factory) where T : class
         {

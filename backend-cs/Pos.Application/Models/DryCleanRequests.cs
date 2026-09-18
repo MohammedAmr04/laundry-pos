@@ -30,6 +30,8 @@ namespace PosCs.Application.Models
         public string AssignedIronerId { get; set; }
         public DateTime? ExpectedDeliveryAt { get; set; }
         public string Notes { get; set; }
+        public string PaymentStatus { get; set; }
+        public string PaymentMethod { get; set; }
         public List<DryCleanLineRequest> Lines { get; set; } = new List<DryCleanLineRequest>();
     }
 

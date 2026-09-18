@@ -46,6 +46,9 @@ namespace PosCs.Infrastructure.Data
                 }
 
                 var sql = File.ReadAllText(file);
+                var handlesForeignKeys = sql.IndexOf("PRAGMA foreign_keys", StringComparison.OrdinalIgnoreCase) >= 0;
+                if (handlesForeignKeys)
+                    conn.Execute("PRAGMA foreign_keys = OFF");
                 using (var tx = conn.BeginTransaction())
                 {
                     try
@@ -53,16 +56,20 @@ namespace PosCs.Infrastructure.Data
                         var statements = SplitSql(sql);
                         foreach (var stmt in statements)
                         {
-                            if (!string.IsNullOrWhiteSpace(stmt))
+                            if (!string.IsNullOrWhiteSpace(stmt) && !IsForeignKeysPragma(stmt))
                                 conn.Execute(stmt, transaction: tx);
                         }
                         conn.Execute("INSERT INTO __Migrations (id) VALUES (@name)", new { name }, transaction: tx);
                         tx.Commit();
+                        if (handlesForeignKeys)
+                            conn.Execute("PRAGMA foreign_keys = ON");
                         Console.WriteLine($"[MIGRATIONS] Applied: {name}");
                     }
                     catch (Exception ex)
                     {
                         tx.Rollback();
+                        if (handlesForeignKeys)
+                            conn.Execute("PRAGMA foreign_keys = ON");
                         Console.Error.WriteLine($"[MIGRATIONS] Failed '{name}': {ex.Message}");
                         throw;
                     }
@@ -89,6 +96,11 @@ namespace PosCs.Infrastructure.Data
             if (current.ToString().Trim().Length > 0)
                 statements.Add(current.ToString().Trim());
             return statements;
+        }
+
+        private static bool IsForeignKeysPragma(string sql)
+        {
+            return sql.Trim().StartsWith("PRAGMA foreign_keys", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

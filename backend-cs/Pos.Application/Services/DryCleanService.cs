@@ -20,14 +20,14 @@ namespace PosCs.Application.Services
             return _orders.Create(request, actorUserId);
         }
 
-        public PagedResult<DryCleanOrder> GetPaged(string status, string query, int page, int pageSize)
+        public PagedResult<DryCleanOrder> GetPaged(string status, string query, string clientId, string paymentStatus, int page, int pageSize)
         {
-            return _orders.GetPaged(status, query, page, pageSize);
+            return _orders.GetPaged(status, query, clientId, paymentStatus, page, pageSize);
         }
 
         public DryCleanOrder GetById(string id) { return _orders.GetById(id); }
-        public DryCleanOrder StartProcessing(string id, string actorUserId) { return _orders.StartProcessing(id, actorUserId); }
-        public DryCleanOrder Complete(string id, string ironerEmployeeId, string actorUserId) { return _orders.Complete(id, ironerEmployeeId, actorUserId); }
+        public DryCleanOrder Prepare(string id, string ironerEmployeeId, string actorUserId) { return _orders.Prepare(id, ironerEmployeeId, actorUserId); }
+        public DryCleanOrder AssignIroner(string id, string ironerEmployeeId, string actorUserId) { return _orders.AssignIroner(id, ironerEmployeeId, actorUserId); }
         public DryCleanOrder Deliver(string id, string deliveryEmployeeId, string actorUserId) { return _orders.Deliver(id, deliveryEmployeeId, actorUserId); }
         public DryCleanOrderPayment AddPayment(string id, CreateDryCleanPaymentRequest request, string actorUserId) { return _orders.AddPayment(id, request, actorUserId); }
         public System.Collections.Generic.List<DryCleanProductivitySummary> GetProductivity(string from, string to) { return _orders.GetProductivity(from, to); }

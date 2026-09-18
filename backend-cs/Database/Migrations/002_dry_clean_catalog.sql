@@ -1,0 +1,6 @@
+CREATE TABLE "DryCleanCatalogItem" (id TEXT PRIMARY KEY, garmentType TEXT NOT NULL, serviceDescription TEXT NOT NULL, unitPrice REAL NOT NULL DEFAULT 0, countsForProductivity INTEGER NOT NULL DEFAULT 1, isManualEntry INTEGER NOT NULL DEFAULT 0, isActive INTEGER NOT NULL DEFAULT 1, createdAt TEXT NOT NULL, updatedAt TEXT NOT NULL, CHECK (unitPrice >= 0));
+CREATE INDEX idx_dry_clean_catalog_active ON DryCleanCatalogItem(isActive, garmentType);
+INSERT INTO Permission (id, key, name, description, resource, action, createdAt, updatedAt) VALUES ('dry_clean.catalog.view', 'dry_clean.catalog.view', 'View Dry Clean Catalog', 'View garment and service catalog', 'dry_clean.catalog', 'view', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), ('dry_clean.catalog.manage', 'dry_clean.catalog.manage', 'Manage Dry Clean Catalog', 'Manage garment and service catalog', 'dry_clean.catalog', 'manage', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO RolePermission (roleId, permissionId) SELECT 'role-admin', id FROM Permission WHERE key IN ('dry_clean.catalog.view', 'dry_clean.catalog.manage');
+INSERT INTO RolePermission (roleId, permissionId) SELECT 'role-manager', id FROM Permission WHERE key IN ('dry_clean.catalog.view', 'dry_clean.catalog.manage');
+INSERT INTO RolePermission (roleId, permissionId) SELECT 'role-cashier', id FROM Permission WHERE key = 'dry_clean.catalog.view';

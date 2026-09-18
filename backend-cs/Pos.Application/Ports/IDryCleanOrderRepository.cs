@@ -9,9 +9,9 @@ namespace PosCs.Application.Ports
     {
         DryCleanOrder Create(CreateDryCleanOrderRequest request, string receivedByUserId);
         DryCleanOrder GetById(string id);
-        PagedResult<DryCleanOrder> GetPaged(string status, string query, int page, int pageSize);
-        DryCleanOrder StartProcessing(string id, string actorUserId);
-        DryCleanOrder Complete(string id, string ironerEmployeeId, string actorUserId);
+        PagedResult<DryCleanOrder> GetPaged(string status, string query, string clientId, string paymentStatus, int page, int pageSize);
+        DryCleanOrder Prepare(string id, string ironerEmployeeId, string actorUserId);
+        DryCleanOrder AssignIroner(string id, string ironerEmployeeId, string actorUserId);
         DryCleanOrder Deliver(string id, string deliveryEmployeeId, string actorUserId);
         DryCleanOrderPayment AddPayment(string orderId, CreateDryCleanPaymentRequest request, string actorUserId);
         List<DryCleanProductivitySummary> GetProductivity(string from, string to);

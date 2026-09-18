@@ -20,7 +20,7 @@ namespace PosCs.Application.Services
             _orders = orders;
         }
 
-        public PrintOutcome PrintDryClean(string id, bool readyCopy)
+        public PrintOutcome PrintDryClean(string id, bool readyCopy, bool ironerCopy)
         {
             var order = _orders.GetById(id);
             if (order == null) return new PrintOutcome { Success = false, Status = 404, Message = "Order not found" };
@@ -31,12 +31,13 @@ namespace PosCs.Application.Services
                 CreatedAt = order.ReceivedAt,
                 Discount = order.DiscountAmount,
                 TotalAmount = order.TotalAmount,
-                CustomerName = order.Client == null ? null : order.Client.Name,
-                CustomerPhone = order.Client == null ? null : order.Client.Phone,
+                CustomerName = ironerCopy ? null : order.Client == null ? null : order.Client.Name,
+                CustomerPhone = ironerCopy ? null : order.Client == null ? null : order.Client.Phone,
                 DeliveryAddress = order.DeliveryAddress,
-                DocumentTitle = readyCopy ? "طلب جاهز للتسليم" : "إيصال استلام طلب",
+                DocumentTitle = ironerCopy ? "ورقة المكوجي" : readyCopy ? "طلب جاهز للتسليم" : "إيصال استلام طلب",
                 PaidAmount = order.PaidAmount,
                 RemainingAmount = order.RemainingAmount,
+                IncludeTotals = !ironerCopy,
                 Items = order.Lines.Select(i => new ReceiptLineItem { Name = i.GarmentType + " - " + i.ServiceDescription, Quantity = i.Quantity, SalePrice = i.UnitPrice, FinalTotal = i.LineTotal }).ToList()
             });
         }

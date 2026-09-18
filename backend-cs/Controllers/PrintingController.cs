@@ -43,7 +43,7 @@ namespace PosCs.Controllers
         {
             try
             {
-                var outcome = _service.PrintDryClean(id, dto != null && dto.ReadyCopy);
+                var outcome = _service.PrintDryClean(id, dto != null && dto.ReadyCopy, dto != null && dto.IronerCopy);
                 return Request.CreateResponse((HttpStatusCode)outcome.Status, ToBody(outcome));
             }
             catch (Exception ex) { return Request.CreateResponse(HttpStatusCode.InternalServerError, new { success = false, message = "Print failed", detail = ex.Message }); }

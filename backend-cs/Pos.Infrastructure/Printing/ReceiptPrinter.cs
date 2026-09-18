@@ -55,13 +55,14 @@ namespace PosCs.Infrastructure.Printing
                         FinalTotal = i.FinalTotal,
                         Components = i.Components.Select(c => new ReceiptComponentModel { Name = c.Name, Quantity = c.Quantity }).ToList()
                     }));
-                    builder.AddTotals(new ReceiptInvoiceModel
-                    {
-                        Discount = receipt.Discount,
-                        TotalAmount = receipt.TotalAmount,
-                        PaidAmount = receipt.PaidAmount,
-                        RemainingAmount = receipt.RemainingAmount
-                    });
+                    if (receipt.IncludeTotals)
+                        builder.AddTotals(new ReceiptInvoiceModel
+                        {
+                            Discount = receipt.Discount,
+                            TotalAmount = receipt.TotalAmount,
+                            PaidAmount = receipt.PaidAmount,
+                            RemainingAmount = receipt.RemainingAmount
+                        });
                     builder.AddFooter(config.ReceiptFooter);
 
                     using (var finalReceipt = builder.GetFinishedReceipt())

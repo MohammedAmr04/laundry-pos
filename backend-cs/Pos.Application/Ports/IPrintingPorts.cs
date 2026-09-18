@@ -26,6 +26,7 @@ namespace PosCs.Application.Ports
         public string DocumentTitle { get; set; }
         public double PaidAmount { get; set; }
         public double RemainingAmount { get; set; }
+        public bool IncludeTotals { get; set; } = true;
         public List<ReceiptLineItem> Items { get; set; } = new List<ReceiptLineItem>();
     }
 

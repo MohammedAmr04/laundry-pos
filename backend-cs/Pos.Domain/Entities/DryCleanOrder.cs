@@ -9,6 +9,7 @@ namespace PosCs.Domain.Entities
         public int OrderNumber { get; set; }
         public string ClientId { get; set; }
         public Client Client { get; set; }
+        public string ClientName { get; set; }
         public string DeliveryAddress { get; set; }
         public string Status { get; set; } = "received";
         public string ReceivedByEmployeeId { get; set; }
