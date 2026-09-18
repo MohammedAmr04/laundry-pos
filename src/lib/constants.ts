@@ -9,6 +9,8 @@ export const PERMISSIONS = {
   DRY_CLEAN_REPORTS_VIEW: 'dry_clean.reports.view',
   DRY_CLEAN_PRODUCTIVITY_VIEW: 'dry_clean.productivity.view',
   DRY_CLEAN_PRINT_RECEIPT: 'dry_clean.print.receipt',
+  DRY_CLEAN_CATALOG_VIEW: 'dry_clean.catalog.view',
+  DRY_CLEAN_CATALOG_MANAGE: 'dry_clean.catalog.manage',
   PRODUCTS_VIEW: 'products.view',
   PRODUCTS_CREATE: 'products.create',
   PRODUCTS_UPDATE: 'products.update',

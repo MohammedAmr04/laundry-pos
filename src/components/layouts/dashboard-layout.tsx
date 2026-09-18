@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname } from "@/i18n/navigation"
-import { Package, ShoppingCart, FileText, LayoutDashboard, AlertTriangle, LogOut, Settings, Users, Shield, SlidersHorizontal, KeyRound, FolderTree, Tags, Ruler, Truck, UsersRound, Boxes, Wallet, Undo2, Timer, Receipt, BarChart3, Printer, ClipboardList, Bell, History, Contact, ArchiveRestore, ShieldCheck, Shirt } from "lucide-react"
+import { Package, ShoppingCart, FileText, LayoutDashboard, AlertTriangle, LogOut, Settings, Users, Shield, SlidersHorizontal, KeyRound, FolderTree, Tags, Ruler, Truck, UsersRound, Boxes, Wallet, Undo2, BarChart3, Printer, ClipboardList, Bell, History, Contact, ArchiveRestore, ShieldCheck, Shirt } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import { useAuth } from "@/components/common/auth-context"
@@ -41,14 +41,10 @@ const sidebarNavItems: SidebarNavItem[] = [
     icon: LayoutDashboard,
     section: "main",
   },
-  {
-    key: "dryClean",
-    href: "/dry-clean/",
-    icon: Shirt,
-    permission: PERMISSIONS.DRY_CLEAN_ORDERS_VIEW,
-    feature: FEATURES.DRY_CLEAN,
-    section: "main",
-  },
+  { key: "dryClean", href: "/dry-clean/", icon: Shirt, permission: PERMISSIONS.DRY_CLEAN_ORDERS_VIEW, feature: FEATURES.DRY_CLEAN, section: "main" },
+  { key: "dryCleanOrders", href: "/dry-clean/orders", icon: ClipboardList, permission: PERMISSIONS.DRY_CLEAN_ORDERS_VIEW, feature: FEATURES.DRY_CLEAN, section: "main" },
+  { key: "dryCleanNew", href: "/dry-clean/new", icon: Shirt, permission: PERMISSIONS.DRY_CLEAN_ORDERS_CREATE, feature: FEATURES.DRY_CLEAN, section: "main" },
+  { key: "dryCleanCatalog", href: "/dry-clean/catalog", icon: ArchiveRestore, permission: PERMISSIONS.DRY_CLEAN_CATALOG_VIEW, feature: FEATURES.DRY_CLEAN, section: "main" },
   {
     key: "clients",
     href: "/clients/",
@@ -61,20 +57,6 @@ const sidebarNavItems: SidebarNavItem[] = [
     href: "/employees/",
     icon: Contact,
     permission: PERMISSIONS.EMPLOYEES_VIEW,
-    section: "main",
-  },
-  {
-    key: "shifts",
-    href: "/shifts/",
-    icon: Timer,
-    permission: PERMISSIONS.SHIFTS_VIEW,
-    section: "main",
-  },
-  {
-    key: "expenses",
-    href: "/expenses/",
-    icon: Receipt,
-    permission: PERMISSIONS.EXPENSES_VIEW,
     section: "main",
   },
   { key: "auditLogs", href: "/audit-logs/", icon: History, permission: PERMISSIONS.AUDIT_VIEW, section: "settings" },
