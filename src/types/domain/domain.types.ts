@@ -259,8 +259,9 @@ export interface DryCleanOrder {
   id: string
   orderNumber: number
   clientId: string
+  clientName?: string | null
   deliveryAddress: string
-  status: 'received' | 'processing' | 'needs_review' | 'ready' | 'delivered' | 'cancelled'
+  status: 'received' | 'prepared' | 'delivered' | 'cancelled'
   receivedByEmployeeId: string
   assignedIronerId: string | null
   deliveredByEmployeeId: string | null
@@ -297,12 +298,18 @@ export interface CreateDryCleanOrderRequest {
   assignedIronerId?: string
   expectedDeliveryAt?: string
   notes?: string
+  paymentStatus?: 'paid' | 'credit'
+  paymentMethod?: DryCleanPaymentMethod
   lines: DryCleanLineInput[]
 }
 
 export type DryCleanPaymentMethod = "cash" | "wallet" | "instapay"
 
 export interface DryCleanProductivitySummary { employeeId: string; employeeName: string; ordersCompleted: number; countedQuantity: number }
+  export interface DryCleanServiceDefinition { id: string; name: string; isActive: boolean; createdAt: string; updatedAt: string }
+  export interface DryCleanServiceInput { name: string; isActive?: boolean }
+  export interface DryCleanCatalogItem { id: string; garmentType: string; serviceDescription: string; serviceId?: string | null; serviceName?: string | null; unitPrice: number; countsForProductivity: boolean; isManualEntry: boolean; isActive: boolean; createdAt: string; updatedAt: string }
+  export interface DryCleanCatalogItemInput { garmentType: string; serviceDescription: string; serviceId?: string; unitPrice: number; countsForProductivity: boolean; isManualEntry: boolean; isActive?: boolean }
 
 export type BalanceFilter = "all" | "positive" | "negative" | "zero"
 
