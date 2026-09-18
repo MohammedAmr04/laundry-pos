@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http.Formatting;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Owin;
@@ -12,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Owin.Hosting;
 using PosCs.Api;
+using PosCs.Hosting;
 using PosCs.Infrastructure.Persistence;
 using PosCs.Infrastructure.Data;
 using PosCs.Middleware;
@@ -156,13 +159,45 @@ namespace PosCs
         public static void Start()
         {
             var url = $"http://localhost:{Environment.GetEnvironmentVariable("API_PORT") ?? "3001"}";
-            using (WebApp.Start<Startup>(url))
+            using (var server = StartServer(url))
             using (var cloudBackupWorker = new CloudBackupWorker(CompositionRoot.BackupService, new CloudinaryBackupUploader()))
             {
                 Console.WriteLine($"[API] Listening on {url}");
                 Console.WriteLine("[API] Press Ctrl+C to stop");
                 System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
             }
+        }
+
+        private static IDisposable StartServer(string url)
+        {
+            try
+            {
+                return WebApp.Start<Startup>(url);
+            }
+            catch (Exception ex)
+            {
+                if (!IsHttpListenerUnsupported(ex)) throw;
+                Console.Error.WriteLine("[API WARN] HttpListener is not supported in this environment. Falling back to TCP host.");
+                return TcpOwinHost.Start(url, BuildOwinApp());
+            }
+        }
+
+        private static Func<IDictionary<string, object>, Task> BuildOwinApp()
+        {
+            var builder = new Microsoft.Owin.Builder.AppBuilder();
+            new Startup().Configuration(builder);
+            return (Func<IDictionary<string, object>, Task>)builder.Build(typeof(Func<IDictionary<string, object>, Task>));
+        }
+
+        private static bool IsHttpListenerUnsupported(Exception ex)
+        {
+            while (ex != null)
+            {
+                if (ex is PlatformNotSupportedException) return true;
+                var target = ex as TargetInvocationException;
+                ex = target != null ? target.InnerException : ex.InnerException;
+            }
+            return false;
         }
     }
 }
