@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
 import { useApiError } from "@/lib/api-error"
 import { toast } from "sonner"
-import { CircleCheck, CircleX, Pencil, Plus } from "lucide-react"
+import { CircleCheck, CircleX, Eye, Pencil, Plus } from "lucide-react"
+import { useRouter } from "@/i18n/navigation"
 
 import { BalanceFilter, Client } from "@/types/domain/domain.types"
 import { useClientsPage } from "@/hooks/use-clients"
@@ -30,6 +31,7 @@ const PAGE_SIZE = 20
 
 export function ClientsClient() {
   const t = useTranslations("Clients")
+  const router = useRouter()
   const tc = useTranslations("Common")
   const resolveError = useApiError()
   const { hasPermission } = useAuth()
@@ -58,6 +60,13 @@ export function ClientsClient() {
   const { data, isPending } = useClientsPage(page, PAGE_SIZE, { q: query, balance })
   const items = data?.items ?? []
   const total = data?.total ?? 0
+  const balanceLabel = balance === "all"
+    ? t("balanceAll")
+    : balance === "positive"
+      ? t("balanceOwesUs")
+      : balance === "negative"
+        ? t("balanceAdvance")
+        : t("balanceSettled")
 
   const openCreate = () => {
     setEditingClient(null)
@@ -147,6 +156,9 @@ export function ClientsClient() {
               </TooltipIconButton>
             </>
           )}
+          <TooltipIconButton label={t("viewDetails")} onClick={() => router.push(`/clients/details?id=${client.id}`)}>
+            <Eye className="h-4 w-4" />
+          </TooltipIconButton>
         </div>
       ),
     },
@@ -179,7 +191,7 @@ export function ClientsClient() {
           }}
         >
           <SelectTrigger aria-label={t("balanceColumn")} className="w-[160px]">
-            <SelectValue />
+            <SelectValue>{balanceLabel}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("balanceAll")}</SelectItem>

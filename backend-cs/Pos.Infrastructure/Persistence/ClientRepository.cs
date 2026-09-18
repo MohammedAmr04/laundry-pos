@@ -61,7 +61,8 @@ namespace PosCs.Infrastructure.Persistence
         public Client GetById(string id)
         {
             using (var conn = DbConnectionFactory.CreateConnection())
-                return conn.QueryFirstOrDefault<Client>("SELECT * FROM Client WHERE id = @id", new { id });
+                return conn.QueryFirstOrDefault<Client>(
+                    $"SELECT c.*, ({BalanceExpr}) AS Balance FROM Client c WHERE c.id = @id", new { id });
         }
 
         public Client Create(Client client)
